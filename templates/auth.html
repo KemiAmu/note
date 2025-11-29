@@ -1,0 +1,115 @@
+<!doctype html>
+<html
+  lang="en"
+  x-data="{is_sign_up:false,user:'',passwd:'',passwd_confirm:'',invite_code:{{invite_code|json}}}"
+>
+  <head>
+    {% include "includes/head.html" %}
+    <title>Account Verification | {{site_title}}</title>
+
+    <script>
+      function signIn(user, passwd) {
+        fetch("{{base_url|safe}}auth/sign-in", {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json",
+          },
+          body: JSON.stringify([user, passwd]),
+          credentials: "include",
+        }).then((resp) => (resp.ok ? location.reload() : alert("Sign in failed")));
+      }
+
+      function signUp(user, passwd, invite_code) {
+        fetch("{{base_url|safe}}auth/sign-up", {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json",
+          },
+          body: JSON.stringify([user, passwd, invite_code]),
+          credentials: "include",
+        }).then((resp) => (resp.ok ? location.reload() : alert("Sign up failed")));
+      }
+    </script>
+  </head>
+  <body>
+    <header class="container">
+      <nav>
+        <ul>
+          <li><b>Account Verification</b></li>
+        </ul>
+        <ul>
+          <li><a class="secondary" href="{{prev_url|safe}}">Back</a></li>
+        </ul>
+      </nav>
+    </header>
+
+    <template x-if="!is_sign_up">
+      <main class="container">
+        <h1>Sign In</h1>
+        <form @submit.prevent="signIn(user, passwd)">
+          <fieldset>
+            <label>
+              Username
+              <input
+                type="text"
+                x-model="user"
+                placeholder="Username"
+                pattern="[A-Za-z0-9_\-]+"
+                required
+              />
+            </label>
+            <label>
+              Password
+              <input type="password" x-model="passwd" placeholder="Password" required />
+            </label>
+          </fieldset>
+          <input type="submit" value="Sign In" />
+          <p><a href="#" @click.prevent="is_sign_up = true">Create an Account</a></p>
+        </form>
+      </main>
+    </template>
+
+    <template x-if="is_sign_up">
+      <main class="container">
+        <h1>Sign Up</h1>
+        {% if invite_code.is_some() %}
+        <form @submit.prevent="signUp(user, passwd, invite_code)">
+          <fieldset>
+            <label>
+              Username (letters, or numbers)
+              <input
+                type="text"
+                x-model="user"
+                placeholder="Username"
+                pattern="[A-Za-z0-9_\-]+"
+                required
+              />
+            </label>
+            <label>
+              Password
+              <input type="password" x-model="passwd" placeholder="Password" required />
+            </label>
+            <label>
+              Password (again)
+              <input
+                type="password"
+                x-model="passwd_confirm"
+                placeholder="Password (again)"
+                :aria-invalid="passwd_confirm !== passwd"
+                required
+              />
+            </label>
+          </fieldset>
+          <input type="submit" value="Sign Up" />
+          <p><a href="#" @click.prevent="is_sign_up = false">Back to Sign In</a></p>
+        </form>
+        {% else %}
+        <div>
+          <p>Accounts can only be obtained through invitations from other users.</p>
+          <p><a href="#" @click.prevent="is_sign_up = false">Back to Sign In</a></p>
+        </div>
+        {% endif %}
+      </main>
+    </template>
+  </body>
+</html>

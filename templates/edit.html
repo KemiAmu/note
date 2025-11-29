@@ -1,0 +1,74 @@
+<!doctype html>
+<html lang="en" x-data="{title:{{title|json}},markdown:{{markdown|json}}}">
+  <head>
+    {% include "includes/head.html" %}
+    <title>{{title}} (Edit) | {{site_title}}</title>
+    <script>
+      function submitContent(title, markdown) {
+        fetch("{{base_url|safe}}page/{{username|urlencode}}/{{file|urlencode}}", {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json",
+          },
+          body: JSON.stringify([title.trim(), markdown.trim()]),
+          credentials: "include",
+        }).then((resp) =>
+          resp.ok
+            ? (window.location.href = "{{base_url|safe}}@{{username|urlencode}}/{{file|urlencode}}")
+            : alert("Submission failed"),
+        );
+      }
+      function deletePage() {
+        if (confirm("Are you sure you want to delete this page?")) {
+          fetch("{{base_url|safe}}page/{{username|urlencode}}/{{file|urlencode}}", {
+            method: "DELETE",
+            credentials: "include",
+          }).then((resp) =>
+            resp.ok ? (window.location.href = "{{base_url|safe}}") : alert("Deletion failed"),
+          );
+        }
+      }
+    </script>
+  </head>
+  <body>
+    <header class="container">
+      <nav>
+        <ul>
+          <li><b>Edit Mode</b></li>
+        </ul>
+        <ul>
+          <li><a class="secondary" href="#" @click.prevent="deletePage()">Delete</a></li>
+          <li>
+            <a class="secondary" href="{{base_url|safe}}@{{username|urlencode}}/{{file|urlencode}}"
+              >Back</a
+            >
+          </li>
+          <li><a class="secondary" href="{{base_url|safe}}">Home</a></li>
+        </ul>
+      </nav>
+    </header>
+
+    <main class="container">
+      <form @submit.prevent="submitContent(title, markdown)">
+        <fieldset>
+          <label>
+            Title
+            <input type="text" x-model="title" placeholder="Title" required />
+          </label>
+
+          <label>
+            Markdown
+            <textarea
+              x-model="markdown"
+              placeholder="Markdown"
+              spellcheck="false"
+              style="height: 50vh"
+            ></textarea>
+          </label>
+        </fieldset>
+
+        <input type="submit" value="Submit" />
+      </form>
+    </main>
+  </body>
+</html>

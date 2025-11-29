@@ -1,0 +1,23 @@
+<!doctype html>
+<html lang="en" x-data="{}">
+  <head>
+    {% include "includes/head.html" %}
+    <title>{{title}} | {{site_title}}</title>
+  </head>
+  <body>
+    <header class="container">
+      <nav>
+        <ul>
+          <li><b>{{title}}</b></li>
+        </ul>
+        <ul>
+          <li><a class="secondary" href="{{base_url|safe}}">Home</a></li>
+        </ul>
+      </nav>
+    </header>
+
+    <main class="container">
+      <p>{{message}}</p>
+    </main>
+  </body>
+</html>

@@ -1,0 +1,58 @@
+<!doctype html>
+<html lang="en" x-data="{}">
+  <head>
+    {% include "includes/head.html" %}
+    <title>{{title}} | {{site_title}}</title>
+  </head>
+  <body>
+    <header class="container">
+      <nav>
+        <ul>
+          <li><b>{{site_title}}</b></li>
+        </ul>
+        <ul>
+          <li>
+            <a
+              class="secondary"
+              href="{{base_url|safe}}@{{username|urlencode}}/{{file|urlencode}}/edit"
+              >Edit</a
+            >
+          </li>
+          <li><a class="secondary" href="{{base_url|safe}}">Home</a></li>
+        </ul>
+      </nav>
+    </header>
+
+    <main class="container">
+      <hgroup>
+        <h1 style="--pico-font-size: 1.5rem">{{title}}</h1>
+        <p>
+          <a class="secondary" href="{{base_url|safe}}@{{username|urlencode}}"
+            >@{{username}} ({{date}})</a
+          >
+        </p>
+      </hgroup>
+    </main>
+
+    <hr />
+    <main class="container content">{{content|safe}}</main>
+
+    <hr />
+    <footer class="container">
+      <nav>
+        <ul>
+          <li><a class="secondary" href="{{base_url|safe}}">« Home</a></li>
+        </ul>
+        {% if let Some((user, file, title)) = next_page %}
+        <ul>
+          <li>
+            <a class="secondary" href="{{base_url|safe}}@{{user|urlencode}}/{{file|urlencode}}"
+              >{{title}} »</a
+            >
+          </li>
+        </ul>
+        {% endif %}
+      </nav>
+    </footer>
+  </body>
+</html>

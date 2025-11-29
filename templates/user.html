@@ -1,0 +1,51 @@
+<!doctype html>
+<html lang="en" x-data="{}">
+  <head>
+    {% include "includes/head.html" %}
+    <title>@{{username}}'s Space | {{site_title}}</title>
+  </head>
+  <body>
+    <header class="container">
+      <nav>
+        <ul>
+          <li><b>@{{username}}'s Space</b></li>
+        </ul>
+        <ul>
+          <li><a class="secondary" href="{{base_url|safe}}">Home</a></li>
+        </ul>
+      </nav>
+    </header>
+
+    <main class="container">
+      <div class="grid">
+        <div>
+          <hgroup>
+            <h2>Documents</h2>
+            <p>Documents published by {{username}}</p>
+          </hgroup>
+          {% if pages.is_empty() %}
+          <p>{{username}} hasn't published any documents yet</p>
+          {% else %}{% for (file, title) in pages %}
+          <p>
+            <a href="{{base_url|safe}}@{{username|urlencode}}/{{file|urlencode}}" class="secondary"
+              >{{title}}</a
+            >
+          </p>
+          {% endfor %}{% endif %}
+        </div>
+
+        <div>
+          <hgroup>
+            <h2>Collaborators</h2>
+            <p>Users authorized to edit by {{username}}</p>
+          </hgroup>
+          {% if collabs.is_empty() %}
+          <p>{{username}} hasn't authorized any collaborators</p>
+          {% else %}{% for mark in collabs %}
+          <p><a href="{{base_url|safe}}@{{mark|urlencode}}" class="secondary">@{{mark}}</a></p>
+          {% endfor %}{% endif %}
+        </div>
+      </div>
+    </main>
+  </body>
+</html>

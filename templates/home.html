@@ -1,0 +1,75 @@
+<!doctype html>
+<html lang="en" x-data="{file:''}">
+  <head>
+    {% include "includes/head.html" %}
+    <title>Home | {{site_title}}</title>
+
+    <script>
+      function createPage(user, file) {
+        fetch(`{{base_url|safe}}page/${user}/${file}`, {
+          method: "PUT",
+          credentials: "include",
+          headers: {
+            "Content-Type": "application/json",
+          },
+        }).then((resp) =>
+          resp.ok
+            ? (window.location.href = `{{base_url}}@${user}/${file}/edit`)
+            : alert("Creation failed"),
+        );
+      }
+
+      function signOut() {
+        fetch("{{base_url|safe}}auth/sign-out", {
+          credentials: "include",
+        }).then((resp) => (resp.ok ? location.reload() : alert("Sign out failed")));
+      }
+    </script>
+  </head>
+  <body>
+    <header class="container">
+      <nav>
+        <ul>
+          <li><b>{{site_title}}</b></li>
+        </ul>
+        <ul>
+          {% if user.is_some() %}
+          <li><a class="secondary" href="#" @click.prevent="signOut()">Sign Out</a></li>
+          {% else %}
+          <li><a class="secondary" href="{{base_url|safe}}auth">Sign In</a></li>
+          {% endif %}
+        </ul>
+      </nav>
+    </header>
+
+    <main class="container">
+      {% for (username, file, title) in pages %}
+      <p>
+        <a class="secondary" href="{{base_url|safe}}@{{username|urlencode}}/{{file|urlencode}}"
+          >{{title}} <small>@{{username}}</small></a
+        >
+      </p>
+      {% endfor %} {% if let Some((username, invite_code)) = user %}
+      <hr />
+      <details>
+        <summary>Invitation Code</summary>
+        <p>
+          You can use the following link to invite collaborators. It will be valid for anyone within
+          7 days:
+        </p>
+        <pre><code>{{base_url|safe}}invite/{{invite_code|urlencode}}</code></pre>
+      </details>
+      <details open="">
+        <summary>Create new document</summary>
+        <p>You can create documents in the current workspace @{{username}}</p>
+        <form @submit.prevent="createPage('{{username|urlencode}}', file.trim())">
+          <fieldset class="grid">
+            <input x-model="file" placeholder="file-name" pattern="[A-Za-z0-9_\-]+" required />
+            <input type="submit" value="Create New Document" />
+          </fieldset>
+        </form>
+      </details>
+      {% endif %}
+    </main>
+  </body>
+</html>
